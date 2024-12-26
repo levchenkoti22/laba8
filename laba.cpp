@@ -6,21 +6,26 @@ class Algorithms {
 public:
     // Метод 1: Пошук мінімального елементу масиву позитивних чисел
     static int findMinPositive(const std::vector<int>& arr) {
-        int min = arr[0];
-        for (int num : arr) {
-            if (num < min && num > 0) {
-                min = num;
+        int min = 0;
+        bool foundPositive = false;
+        for (int i = 0; i < arr.size(); ++i) {
+            if (arr[i] > 0) {
+                if (!foundPositive || arr[i] < min) {
+                    min = arr[i];
+                    foundPositive = true;
+                }
             }
         }
-        return min;
+        // Якщо позитивних чисел не знайдено, повертаємо 0
+        return foundPositive ? min : 0;
     }
 
     // Метод 2: Розрахунок суми елементів масиву з від'ємними числами
     static int sumNegative(const std::vector<int>& arr) {
         int sum = 0;
-        for (int num : arr) {
-            if (num < 0) {
-                sum += num;
+        for (int i = 0; i < arr.size(); ++i) {
+            if (arr[i] < 0) {
+                sum += arr[i];
             }
         }
         return sum;
@@ -28,25 +33,34 @@ public:
 
     // Метод 3: Алгоритм розрахунку N-го елементу послідовності Фібоначчі
     static int fibonacci(int n) {
-        if (n <= 1) return n;
-        int a = 0, b = 1, c;
-        for (int i = 2; i <= n; ++i) {
-            c = a + b;
-            a = b;
-            b = c;
+        int fib = 0;
+        int a = 0, b = 1;
+        if (n <= 0) {
+            fib = 0;
+        } else if (n == 1) {
+            fib = 1;
+        } else {
+            for (int i = 0; i < n; ++i) {
+                fib = a + b;
+                a = b;
+                b = fib;
+            }
         }
-        return b;
+        return fib;
     }
 
     // Метод 4: Алгоритм розрахунку сили струму на ділянці кола (I = V/R)
     static double currentStrength(double voltage, double resistance) {
-        if (resistance == 0) {
+        double current = 0.0;
+        if (resistance != 0) {
+            current = voltage / resistance;
+        } else {
             std::cerr << "Resistance cannot be zero." << std::endl;
-            return -1;
         }
-        return voltage / resistance;
+        return current;
     }
 };
+
 // Позитивні тести
 void testFindMinPositive() {
     std::vector<int> arr = {4, 2, 7, 1, 3};
@@ -81,7 +95,7 @@ void testNegativeCases() {
     std::cout << "Sum negative: " << result << std::endl;  // Очікується: -6
 
     result = Algorithms::fibonacci(-1);
-    std::cout << "Fibonacci: " << result << std::endl;  // Очікується: негативне значення
+    std::cout << "Fibonacci: " << result << std::endl;  // Очікується: 0 або негативне значення
 
     result = Algorithms::currentStrength(10.0, 0.0);
     std::cout << "Current Strength: " << result << std::endl;  // Очікується: помилка
